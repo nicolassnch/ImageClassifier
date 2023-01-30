@@ -4,6 +4,7 @@ Created on Fri Jan 20 19:07:43 2023
 @author: cecile capponi
 """
 from collections import Counter
+import glob
 
 from PIL import Image
 
@@ -59,8 +60,22 @@ stored in.
 
 
 def load_transform_label_train_data(directory, representation):
-    return None
+    labelAndRepresentation = {
+        0: [],
+        1: []
+    }
 
+    arrMer = glob.glob(directory + "/Mer")
+    arrAilleur = glob.glob(directory + "/Ailleurs")
+    for path in arrMer:
+        labelAndRepresentation[1].append(raw_image_to_representation(path, representation))
+        for path in arrAilleur:
+            labelAndRepresentation[0].append((raw_image_to_representation(path, representation)))
+
+    return labelAndRepresentation
+
+
+print(load_transform_label_train_data("Data","HIST"))
 
 """
 Returns a data structure embedding test images described according to the 
