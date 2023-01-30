@@ -19,23 +19,26 @@ input = an image (jpg, png, gif)
 output = a new representation of the image
 """
 
-
 def raw_image_to_representation(image, representation):
     input_image = Image.open(image)
 
+
     input_image.convert("RGB")
 
-    print("dde")
     image_size_x = input_image.size[0]
     image_size_y = input_image.size[1]
 
     image_load = input_image.load()
 
+    print(image)
     red, green, blue = [], [], []
 
     for row in range(image_size_x):
         for col in range(image_size_y):
-            r, g, b = image_load[row, col]
+            rgb = image_load[row, col]
+            r= rgb[0]
+            g=rgb[1]
+            b = rgb[2]
             red.append(r)
             green.append(g)
             blue.append(b)
