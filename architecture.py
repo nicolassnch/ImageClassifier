@@ -3,6 +3,7 @@ Created on Fri Jan 20 19:07:43 2023
 
 @author: cecile capponi
 """
+from collections import Counter
 
 from PIL import Image
 
@@ -21,10 +22,25 @@ output = a new representation of the image
 def raw_image_to_representation(image, representation):
     input_image = Image.open(image)
 
+    input_image.convert("RGB")
 
+    image_size_x = input_image.size[0]
+    image_size_y = input_image.size[1]
 
-    return None
+    red, green, blue = [], [], []
 
+    for row in range(image_size_x):
+        for col in range(image_size_y):
+            r, g, b = input_image.getpixel((row, col))
+            red.append(int(r))
+            green.append(int(g))
+            blue.append(int(b))
+
+    red_dict = Counter(red)
+    green_dict = Counter(green)
+    blue_dict = Counter(blue)
+
+    return red_dict, green_dict, blue_dict
 
 """
 Returns a data structure embedding train images described according to the 
