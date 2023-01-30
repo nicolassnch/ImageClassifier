@@ -28,20 +28,23 @@ def raw_image_to_representation(image, representation):
     image_size_x = input_image.size[0]
     image_size_y = input_image.size[1]
 
+    image_load = input_image.load()
+
     red, green, blue = [], [], []
 
     for row in range(image_size_x):
         for col in range(image_size_y):
-            r, g, b = input_image.getpixel((row, col))
-            red.append(int(r))
-            green.append(int(g))
-            blue.append(int(b))
+            r, g, b = image_load[row, col]
+            red.append(r)
+            green.append(g)
+            blue.append(b)
 
     red_dict = Counter(red)
     green_dict = Counter(green)
     blue_dict = Counter(blue)
 
     return red_dict, green_dict, blue_dict
+
 
 """
 Returns a data structure embedding train images described according to the 
@@ -75,7 +78,7 @@ def load_transform_label_train_data(directory, representation):
     return labelAndRepresentation
 
 
-print(load_transform_label_train_data("Data","HIST"))
+print(load_transform_label_train_data("Data", "HIST"))
 
 """
 Returns a data structure embedding test images described according to the 
