@@ -25,6 +25,7 @@ def raw_image_to_representation(image, representation):
 
     input_image.convert("RGB")
 
+    print("dde")
     image_size_x = input_image.size[0]
     image_size_y = input_image.size[1]
 
@@ -44,7 +45,6 @@ def raw_image_to_representation(image, representation):
     blue_dict = Counter(blue)
 
     return red_dict, green_dict, blue_dict
-
 
 """
 Returns a data structure embedding train images described according to the 
@@ -68,17 +68,17 @@ def load_transform_label_train_data(directory, representation):
         1: []
     }
 
-    arrMer = glob.glob(directory + "/Mer")
-    arrAilleur = glob.glob(directory + "/Ailleurs")
+    arrMer = glob.glob(directory + "/Mer/*")
+    arrAilleur = glob.glob(directory + "/Ailleurs/*")
     for path in arrMer:
         labelAndRepresentation[1].append(raw_image_to_representation(path, representation))
-        for path in arrAilleur:
-            labelAndRepresentation[0].append((raw_image_to_representation(path, representation)))
+    for path in arrAilleur:
+        labelAndRepresentation[0].append((raw_image_to_representation(path, representation)))
 
     return labelAndRepresentation
 
 
-print(load_transform_label_train_data("Data", "HIST"))
+print(load_transform_label_train_data("Data","HIST"))
 
 """
 Returns a data structure embedding test images described according to the 
