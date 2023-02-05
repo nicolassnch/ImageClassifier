@@ -167,9 +167,12 @@ output =  a structure that associates a label to each data (image) of the input 
 
 
 def predict_sample_label(data, model):
-    predictions = {-1: [],
-                   1: []}
-    return predictions
+    predictions_label = []
+
+    for image in data:
+        prediction = predict_example_label(image, model)
+        predictions_label.append(prediction)
+    return predictions_label
 
 
 """
@@ -185,7 +188,11 @@ output =  OK if the file has been saved, not OK if not
 
 
 def write_predictions(directory, filename, data, model):
-    return None
+    predictions_label = predict_sample_label(data, model)
+
+    with open(directory + "/prediction.txt", "w") as fichier:
+        for i in range(len(filename)):
+            fichier.write(filename[i] + " " + str(predictions_label[i]) + "\n")
 
 
 """
@@ -201,4 +208,33 @@ are worst than random
 
 
 def estimate_model_score(train_data, model, k):
-    return None
+    return
+
+
+if __name__ == '__main__':
+    filename = ["za7huw.jpeg", "zedaza.jpeg"]
+    data_Test = load_transform_test_data("test", "a")
+    train_data = load_transform_label_train_data("Data", "a")
+
+    algo_dico = {
+        'algorithm': 'SVC',
+        'hyper_parameters': {
+            'C': 1.0,
+            'kernel': 'rbf',
+            'degree': 3,
+            'gamma': 'scale',
+            'coef0': 0.0,
+            'shrinking': True,
+            'probability': False,
+            'tol': 0.001,
+            'class_weight': None,
+            'verbose': False,
+            'max_iter': -1,
+            'decision_function_shape': 'ovr',
+            'random_state': None
+        }
+    }
+
+    model = learn_model_from_data(train_data, algo_dico)
+
+    write_predictions("./", filename, data_Test, model)
