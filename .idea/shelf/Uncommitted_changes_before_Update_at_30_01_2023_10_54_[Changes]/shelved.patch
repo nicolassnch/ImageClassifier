@@ -1,0 +1,152 @@
+Index: architecture.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>\"\"\"\r\nCreated on Fri Jan 20 19:07:43 2023\r\n\r\n@author: cecile capponi\r\n\"\"\"\r\nfrom collections import Counter\r\nimport glob\r\n\r\nfrom PIL import Image\r\n\r\n\"\"\"\r\nComputes a representation of an image from the (gif, png, jpg...) file \r\nrepresentation can be (to extend) \r\n'HC': color histogram\r\n'PX': tensor of pixels\r\n'GC': matrix of gray pixels \r\nother to be defined\r\ninput = an image (jpg, png, gif)\r\noutput = a new representation of the image\r\n\"\"\"\r\n\r\n\r\ndef raw_image_to_representation(image, representation):\r\n    input_image = Image.open(image)\r\n\r\n    input_image.convert(\"RGB\")\r\n\r\n    image_size_x = input_image.size[0]\r\n    image_size_y = input_image.size[1]\r\n\r\n    red, green, blue = [], [], []\r\n\r\n    for row in range(image_size_x):\r\n        for col in range(image_size_y):\r\n            r, g, b = input_image.getpixel((row, col))\r\n            red.append(int(r))\r\n            green.append(int(g))\r\n            blue.append(int(b))\r\n\r\n    red_dict = Counter(red)\r\n    green_dict = Counter(green)\r\n    blue_dict = Counter(blue)\r\n\r\n    return red_dict, green_dict, blue_dict\r\n\r\n\"\"\"\r\nReturns a data structure embedding train images described according to the \r\nspecified representation and associate each image to its label.\r\n-> Representation can be (to extend) \r\n'HC': color histogram\r\n'PX': tensor of pixels \r\n'GC': matrix of gray pixels\r\nother to be defined\r\ninput = where are the data, which represenation of the data must be produced ? \r\noutput = a structure (dictionnary ? Matrix ? File ?) where the images of the\r\ndirectory have been transformed and labelled according to the directory they are\r\nstored in.\r\n-- uses function raw_image_to_representation\r\n\"\"\"\r\n\r\n\r\ndef load_transform_label_train_data(directory, representation):\r\n    labelAndRepresentation = {\r\n        0: [],\r\n        1: []\r\n    }\r\n\r\n    arrMer = glob.glob(directory + \"/Mer\")\r\n    arrAilleur = glob.glob(directory + \"/Ailleurs\")\r\n    for path in arrMer:\r\n        labelAndRepresentation[1].append(raw_image_to_representation(path, representation))\r\n        for path in arrAilleur:\r\n            labelAndRepresentation[0].append((raw_image_to_representation(path, representation)))\r\n\r\n    return labelAndRepresentation\r\n\r\n\r\nprint(load_transform_label_train_data(\"Data\",\"HIST\"))\r\n\r\n\"\"\"\r\nReturns a data structure embedding test images described according to the \r\nspecified representation.\r\n-> Representation can be (to extend) \r\n'HC': color histogram\r\n'PX': tensor of pixels \r\n'GC': matrix of gray pixels \r\nother to be defined\r\ninput = where are the data, which represenation of the data must be produced ? \r\noutput = a structure (dictionnary ? Matrix ? File ?) where the images of the\r\ndirectory have been transformed (but not labelled)\r\n-- uses function raw_image_to_representation\r\n\"\"\"\r\n\r\n\r\ndef load_transform_test_data(directory, representation):\r\n    return None\r\n\r\n\r\n\"\"\"\r\nLearn a model (function) from a representation of data, using the algorithm \r\nand its hyper-parameters described in algo_dico\r\nHere data has been previously transformed to the representation used to learn\r\nthe model\r\ninput = transformed labelled data, the used learning algo and its hyper-parameters (a dico ?)\r\noutput =  a model fit with data\r\n\"\"\"\r\n\r\n\r\ndef learn_model_from_data(train_data, algo_dico):\r\n    model = None\r\n    return model\r\n\r\n\r\n\"\"\"\r\nGiven one example (representation of an image as used to compute the model),\r\ncomputes its class according to a previously learned model.\r\nHere data has been previously transformed to the representation used to learn\r\nthe model\r\ninput = representation of one data, the learned model\r\noutput = the label of that one data (+1 or -1)\r\n-- uses the model learned by function learn_model_from_data\r\n\"\"\"\r\n\r\n\r\ndef predict_example_label(example, model):\r\n    label = 1  # could be -1\r\n    return label\r\n\r\n\r\n\"\"\"\r\nComputes an array (or list or dico or whatever) that associates a prediction \r\nto each example (image) of the data, using a previously learned model. \r\nHere data has been previously transformed to the representation used to learn\r\nthe model\r\ninput = a structure (dico, matrix, ...) embedding all transformed data to a representation, and a model\r\noutput =  a structure that associates a label to each data (image) of the input sample\r\n\"\"\"\r\n\r\n\r\ndef predict_sample_label(data, model):\r\n    predictions = None\r\n    return predictions\r\n\r\n\r\n\"\"\"\r\nSave the predictions on data to a text file with syntax:\r\nfilename <space> label (either -1 or 1)  \r\nNO ACCENT  \r\nHere data has been previously transformed to the representation used to learn\r\nthe model\r\ninput = where to save the predictions, structure embedding the data, the model used\r\nfor predictions\r\noutput =  OK if the file has been saved, not OK if not\r\n\"\"\"\r\n\r\n\r\ndef write_predictions(directory, filename, data, model):\r\n    return None\r\n\r\n\r\n\"\"\"\r\nEstimates the accuracy of a previously learned model using train data, \r\neither through CV or mean hold-out, with k folds.\r\nHere data has been previously transformed to the representation used to learn\r\nthe model\r\ninput = the train labelled data as previously structured, the learned model, and\r\nthe number of split to be used either in a hold-out or by cross-validation  \r\noutput =  The score of success (betwwen 0 and 1, the higher the better, scores under 0.5\r\nare worst than random\r\n\"\"\"\r\n\r\n\r\ndef estimate_model_score(train_data, model, k):\r\n    return None\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/architecture.py b/architecture.py
+--- a/architecture.py	(revision 738f1a14a3bb6d0beeb000eefba31e58e7e8528b)
++++ b/architecture.py	(date 1675072185662)
+@@ -24,18 +24,19 @@
+     input_image = Image.open(image)
+ 
+     input_image.convert("RGB")
+-
+     image_size_x = input_image.size[0]
+     image_size_y = input_image.size[1]
+ 
++    print(image_size_y)
++
+     red, green, blue = [], [], []
+ 
+     for row in range(image_size_x):
+         for col in range(image_size_y):
+             r, g, b = input_image.getpixel((row, col))
+-            red.append(int(r))
+-            green.append(int(g))
+-            blue.append(int(b))
++            red.append(r)
++            green.append(g)
++            blue.append(b)
+ 
+     red_dict = Counter(red)
+     green_dict = Counter(green)
+@@ -65,12 +66,13 @@
+         1: []
+     }
+ 
+-    arrMer = glob.glob(directory + "/Mer")
+-    arrAilleur = glob.glob(directory + "/Ailleurs")
++    arrMer = glob.glob(directory + "/Mer/*")
++    print(arrMer)
++    arrAilleur = glob.glob(directory + "/Ailleurs/*")
+     for path in arrMer:
+         labelAndRepresentation[1].append(raw_image_to_representation(path, representation))
+-        for path in arrAilleur:
+-            labelAndRepresentation[0].append((raw_image_to_representation(path, representation)))
++    for path in arrAilleur:
++        labelAndRepresentation[0].append((raw_image_to_representation(path, representation)))
+ 
+     return labelAndRepresentation
+ 
+Index: .idea/vcs.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/vcs.xml b/.idea/vcs.xml
+new file mode 100644
+--- /dev/null	(date 1675071543603)
++++ b/.idea/vcs.xml	(date 1675071543603)
+@@ -0,0 +1,6 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<project version="4">
++  <component name="VcsDirectoryMappings">
++    <mapping directory="" vcs="Git" />
++  </component>
++</project>
+\ No newline at end of file
+Index: .idea/.gitignore
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/.gitignore b/.idea/.gitignore
+new file mode 100644
+--- /dev/null	(date 1675071543758)
++++ b/.idea/.gitignore	(date 1675071543758)
+@@ -0,0 +1,3 @@
++# Default ignored files
++/shelf/
++/workspace.xml
+Index: .idea/Projet-AA.iml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/Projet-AA.iml b/.idea/Projet-AA.iml
+new file mode 100644
+--- /dev/null	(date 1675071543542)
++++ b/.idea/Projet-AA.iml	(date 1675071543542)
+@@ -0,0 +1,8 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<module type="PYTHON_MODULE" version="4">
++  <component name="NewModuleRootManager">
++    <content url="file://$MODULE_DIR$" />
++    <orderEntry type="inheritedJdk" />
++    <orderEntry type="sourceFolder" forTests="false" />
++  </component>
++</module>
+\ No newline at end of file
+Index: .idea/modules.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/modules.xml b/.idea/modules.xml
+new file mode 100644
+--- /dev/null	(date 1675071543556)
++++ b/.idea/modules.xml	(date 1675071543556)
+@@ -0,0 +1,8 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<project version="4">
++  <component name="ProjectModuleManager">
++    <modules>
++      <module fileurl="file://$PROJECT_DIR$/.idea/Projet-AA.iml" filepath="$PROJECT_DIR$/.idea/Projet-AA.iml" />
++    </modules>
++  </component>
++</project>
+\ No newline at end of file
+Index: .idea/misc.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/misc.xml b/.idea/misc.xml
+new file mode 100644
+--- /dev/null	(date 1675071543570)
++++ b/.idea/misc.xml	(date 1675071543570)
+@@ -0,0 +1,4 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<project version="4">
++  <component name="ProjectRootManager" version="2" project-jdk-name="Python 3.9" project-jdk-type="Python SDK" />
++</project>
+\ No newline at end of file
+Index: .idea/inspectionProfiles/profiles_settings.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/inspectionProfiles/profiles_settings.xml b/.idea/inspectionProfiles/profiles_settings.xml
+new file mode 100644
+--- /dev/null	(date 1675071543589)
++++ b/.idea/inspectionProfiles/profiles_settings.xml	(date 1675071543589)
+@@ -0,0 +1,6 @@
++<component name="InspectionProjectProfileManager">
++  <settings>
++    <option name="USE_PROJECT_PROFILE" value="false" />
++    <version value="1.0" />
++  </settings>
++</component>
+\ No newline at end of file
