@@ -4,8 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="41c7ab6b-c5b5-48ba-afd2-017bc3f39192" name="Changes" comment="fonction 1 2 ca marche">
-      <change beforePath="$PROJECT_DIR$/Data/Mer/ar54ff.png" beforeDir="false" />
+    <list default="true" id="41c7ab6b-c5b5-48ba-afd2-017bc3f39192" name="Changes" comment="push de fou">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Data/Ailleurs/zedaza.jpeg" beforeDir="false" afterPath="$PROJECT_DIR$/test/zedaza.jpeg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/architecture.py" beforeDir="false" afterPath="$PROJECT_DIR$/architecture.py" afterDir="false" />
+    </list>
+    <list id="ade93d56-d298-43d5-99a4-12f109949130" name="Changes by ycn" comment="">
       <change beforePath="$PROJECT_DIR$/architecture.py" beforeDir="false" afterPath="$PROJECT_DIR$/architecture.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -20,6 +24,20 @@
       </list>
     </option>
   </component>
+  <component name="LineStatusTrackerManager">
+    <file path="$PROJECT_DIR$/architecture.py">
+      <ranges>
+        <range start1="34" end1="35" start2="34" end2="34" changelist="41c7ab6b-c5b5-48ba-afd2-017bc3f39192" />
+        <range start1="55" end1="60" start2="54" end2="54" changelist="ade93d56-d298-43d5-99a4-12f109949130" />
+        <range start1="65" end1="65" start2="59" end2="60" changelist="ade93d56-d298-43d5-99a4-12f109949130" />
+        <range start1="93" end1="93" start2="88" end2="89" changelist="ade93d56-d298-43d5-99a4-12f109949130" />
+        <range start1="112" end1="115" start2="108" end2="108" changelist="ade93d56-d298-43d5-99a4-12f109949130" />
+        <range start1="133" end1="137" start2="126" end2="129" changelist="41c7ab6b-c5b5-48ba-afd2-017bc3f39192" />
+        <range start1="157" end1="157" start2="149" end2="151" changelist="ade93d56-d298-43d5-99a4-12f109949130" />
+        <range start1="158" end1="160" start2="152" end2="154" changelist="41c7ab6b-c5b5-48ba-afd2-017bc3f39192" />
+      </ranges>
+    </file>
+  </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
   </component>
@@ -28,13 +46,14 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;ASKED_SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "codeWithMe.voiceChat.enabledByDefault": "false"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="C:\Users\sanchez\Documents\Projet-AA\test" />
@@ -105,12 +124,20 @@
       <option name="project" value="LOCAL" />
       <updated>1675075289823</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="push de fou">
+      <created>1675608032044</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1675608032044</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="loast_transform_label_train_data premiere version" />
     <MESSAGE value="fonction 1 2 ca marche" />
-    <option name="LAST_COMMIT_MESSAGE" value="fonction 1 2 ca marche" />
+    <MESSAGE value="push de fou" />
+    <option name="LAST_COMMIT_MESSAGE" value="push de fou" />
   </component>
 </project>

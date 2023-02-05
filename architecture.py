@@ -32,7 +32,6 @@ def raw_image_to_representation(image, representation):
     resized_image = cv2.resize(img, desired_size)
 
     gray = cv2.cvtColor(resized_image, cv2.COLOR_BGR2GRAY)
-
     return np.ravel(gray).tolist()
 
 
@@ -131,10 +130,8 @@ output = the label of that one data (+1 or -1)
 
 
 def predict_example_label(example, model):
-    print("a")
-    print(model.predict(example))
-    label = 1  # could be -1
-    return label
+    label = model.predict([example])
+    return label[0]
 
 
 algo_dico = {
@@ -156,8 +153,8 @@ algo_dico = {
     }
 }
 
-print(predict_example_label(load_transform_label_train_data("test", "")[0],
-                            learn_model_from_data(load_transform_label_train_data("Data", "HIST"), algo_dico)))
+#print(predict_example_label(load_transform_test_data("test", "prout")[0],
+#                            learn_model_from_data(load_transform_label_train_data("Data", "HIST"), algo_dico)))
 
 """
 Computes an array (or list or dico or whatever) that associates a prediction 
@@ -170,7 +167,8 @@ output =  a structure that associates a label to each data (image) of the input 
 
 
 def predict_sample_label(data, model):
-    predictions = None
+    predictions = {-1: [],
+                   1: []}
     return predictions
 
 
