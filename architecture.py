@@ -6,7 +6,11 @@ Created on Fri Jan 20 19:07:43 2023
 from collections import Counter
 import glob
 
+import numpy as np
+import cv2
 from PIL import Image
+from sklearn.model_selection import train_test_split
+from sklearn.svm import SVC
 
 """
 Computes a representation of an image from the (gif, png, jpg...) file 
@@ -19,35 +23,17 @@ input = an image (jpg, png, gif)
 output = a new representation of the image
 """
 
+
 def raw_image_to_representation(image, representation):
-    input_image = Image.open(image)
+    img = cv2.imread(image)
 
+    desired_size = (500, 500)
 
-    input_image.convert("RGB")
+    resized_image = cv2.resize(img, desired_size)
 
-    image_size_x = input_image.size[0]
-    image_size_y = input_image.size[1]
+    gray = cv2.cvtColor(resized_image, cv2.COLOR_BGR2GRAY)
+    return np.ravel(gray).tolist()
 
-    image_load = input_image.load()
-
-    print(image)
-    red, green, blue = [], [], []
-
-    for row in range(image_size_x):
-        for col in range(image_size_y):
-            rgb = image_load[row, col]
-            r= rgb[0]
-            g=rgb[1]
-            b = rgb[2]
-            red.append(r)
-            green.append(g)
-            blue.append(b)
-
-    red_dict = Counter(red)
-    green_dict = Counter(green)
-    blue_dict = Counter(blue)
-
-    return red_dict, green_dict, blue_dict
 
 """
 Returns a data structure embedding train images described according to the 
@@ -67,21 +53,24 @@ stored in.
 
 def load_transform_label_train_data(directory, representation):
     labelAndRepresentation = {
-        0: [],
+        -1: [],
         1: []
     }
+
+    label = []
+    data = []
 
     arrMer = glob.glob(directory + "/Mer/*")
     arrAilleur = glob.glob(directory + "/Ailleurs/*")
     for path in arrMer:
-        labelAndRepresentation[1].append(raw_image_to_representation(path, representation))
+        label.append(1)
+        data.append(raw_image_to_representation(path, representation))
     for path in arrAilleur:
-        labelAndRepresentation[0].append((raw_image_to_representation(path, representation)))
+        label.append(-1)
+        data.append(raw_image_to_representation(path, representation))
 
-    return labelAndRepresentation
+    return label, data
 
-
-print(load_transform_label_train_data("Data","HIST"))
 
 """
 Returns a data structure embedding test images described according to the 
@@ -99,7 +88,12 @@ directory have been transformed (but not labelled)
 
 
 def load_transform_test_data(directory, representation):
-    return None
+    testData = []
+    arrTest = glob.glob(directory + "/*")
+    for path in arrTest:
+        testData.append(raw_image_to_representation(path, representation))
+
+    return testData
 
 
 """
@@ -113,7 +107,14 @@ output =  a model fit with data
 
 
 def learn_model_from_data(train_data, algo_dico):
-    model = None
+    X_train = train_data[1]
+    y_train = train_data[0]
+
+    print(len(X_train))
+    print(len(y_train))
+
+    model = SVC(**algo_dico['hyper_parameters'])
+    model.fit(X_train, y_train)
     return model
 
 
@@ -129,9 +130,31 @@ output = the label of that one data (+1 or -1)
 
 
 def predict_example_label(example, model):
-    label = 1  # could be -1
-    return label
+    label = model.predict([example])
+    return label[0]
 
+
+algo_dico = {
+    'algorithm': 'SVC',
+    'hyper_parameters': {
+        'C': 1.0,
+        'kernel': 'rbf',
+        'degree': 3,
+        'gamma': 'scale',
+        'coef0': 0.0,
+        'shrinking': True,
+        'probability': False,
+        'tol': 0.001,
+        'class_weight': None,
+        'verbose': False,
+        'max_iter': -1,
+        'decision_function_shape': 'ovr',
+        'random_state': None
+    }
+}
+
+#print(predict_example_label(load_transform_test_data("test", "prout")[0],
+#                            learn_model_from_data(load_transform_label_train_data("Data", "HIST"), algo_dico)))
 
 """
 Computes an array (or list or dico or whatever) that associates a prediction 
@@ -144,8 +167,12 @@ output =  a structure that associates a label to each data (image) of the input 
 
 
 def predict_sample_label(data, model):
-    predictions = None
-    return predictions
+    predictions_label = []
+
+    for image in data:
+        prediction = predict_example_label(image, model)
+        predictions_label.append(prediction)
+    return predictions_label
 
 
 """
@@ -161,7 +188,11 @@ output =  OK if the file has been saved, not OK if not
 
 
 def write_predictions(directory, filename, data, model):
-    return None
+    predictions_label = predict_sample_label(data, model)
+
+    with open(directory + "/prediction.txt", "w") as fichier:
+        for i in range(len(filename)):
+            fichier.write(filename[i] + " " + str(predictions_label[i]) + "\n")
 
 
 """
@@ -177,4 +208,33 @@ are worst than random
 
 
 def estimate_model_score(train_data, model, k):
-    return None
+    return
+
+
+if __name__ == '__main__':
+    filename = ["za7huw.jpeg", "zedaza.jpeg"]
+    data_Test = load_transform_test_data("test", "a")
+    train_data = load_transform_label_train_data("Data", "a")
+
+    algo_dico = {
+        'algorithm': 'SVC',
+        'hyper_parameters': {
+            'C': 1.0,
+            'kernel': 'rbf',
+            'degree': 3,
+            'gamma': 'scale',
+            'coef0': 0.0,
+            'shrinking': True,
+            'probability': False,
+            'tol': 0.001,
+            'class_weight': None,
+            'verbose': False,
+            'max_iter': -1,
+            'decision_function_shape': 'ovr',
+            'random_state': None
+        }
+    }
+
+    model = learn_model_from_data(train_data, algo_dico)
+
+    write_predictions("./", filename, data_Test, model)
