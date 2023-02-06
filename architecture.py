@@ -52,16 +52,12 @@ stored in.
 
 
 def load_transform_label_train_data(directory, representation):
-    labelAndRepresentation = {
-        -1: [],
-        1: []
-    }
-
     label = []
     data = []
 
     arrMer = glob.glob(directory + "/Mer/*")
     arrAilleur = glob.glob(directory + "/Ailleurs/*")
+
     for path in arrMer:
         label.append(1)
         data.append(raw_image_to_representation(path, representation))
@@ -90,6 +86,7 @@ directory have been transformed (but not labelled)
 def load_transform_test_data(directory, representation):
     testData = []
     arrTest = glob.glob(directory + "/*")
+
     for path in arrTest:
         testData.append(raw_image_to_representation(path, representation))
 
@@ -109,9 +106,6 @@ output =  a model fit with data
 def learn_model_from_data(train_data, algo_dico):
     X_train = train_data[1]
     y_train = train_data[0]
-
-    print(len(X_train))
-    print(len(y_train))
 
     model = SVC(**algo_dico['hyper_parameters'])
     model.fit(X_train, y_train)
@@ -133,28 +127,6 @@ def predict_example_label(example, model):
     label = model.predict([example])
     return label[0]
 
-
-algo_dico = {
-    'algorithm': 'SVC',
-    'hyper_parameters': {
-        'C': 1.0,
-        'kernel': 'rbf',
-        'degree': 3,
-        'gamma': 'scale',
-        'coef0': 0.0,
-        'shrinking': True,
-        'probability': False,
-        'tol': 0.001,
-        'class_weight': None,
-        'verbose': False,
-        'max_iter': -1,
-        'decision_function_shape': 'ovr',
-        'random_state': None
-    }
-}
-
-#print(predict_example_label(load_transform_test_data("test", "prout")[0],
-#                            learn_model_from_data(load_transform_label_train_data("Data", "HIST"), algo_dico)))
 
 """
 Computes an array (or list or dico or whatever) that associates a prediction 
