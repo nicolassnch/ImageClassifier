@@ -11,6 +11,9 @@ structures de données pour les train_data :
         une pour les data X_train : matrice des nuances de gris d'une image
         une pour les labels y_train : liste des "label" (-1 ou 1) pour chaque image
 
+Nous avons dû retirer queqlues images du projets qui ne fonctionnaient pas :
+"ll9944.png", "z3tt.png", "ar54ff.png", "aq9ooh.png"
+
 Crédits pour chaque fonction :
 
 Remarque : Nous avons travaillé en groupe tout le long, la répartition du travail sur les fonctions est surtout
