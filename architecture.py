@@ -8,8 +8,9 @@ import glob
 
 import numpy as np
 import cv2
-from PIL import Image
+from sklearn.metrics import accuracy_score
 from sklearn.model_selection import train_test_split
+from sklearn.naive_bayes import GaussianNB
 from sklearn.svm import SVC
 
 """
@@ -25,15 +26,19 @@ output = a new representation of the image
 
 
 def raw_image_to_representation(image, representation):
-    img = cv2.imread(image)
 
-    desired_size = (500, 500)
+    if representation =="GRAY":
 
-    resized_image = cv2.resize(img, desired_size)
+        img = cv2.imread(image)
 
-    gray = cv2.cvtColor(resized_image, cv2.COLOR_BGR2GRAY)
-    return np.ravel(gray).tolist()
+        desired_size = (500, 500)
 
+        resized_image = cv2.resize(img, desired_size)
+
+        gray = cv2.cvtColor(resized_image, cv2.COLOR_BGR2GRAY)
+        return np.ravel(gray).tolist()
+
+        raise representation + " existe pas "
 
 """
 Returns a data structure embedding train images described according to the 
@@ -107,10 +112,19 @@ def learn_model_from_data(train_data, algo_dico):
     X_train = train_data[1]
     y_train = train_data[0]
 
-    model = SVC(**algo_dico['hyper_parameters'])
-    model.fit(X_train, y_train)
-    return model
+    if algo_dico["algorithm_name"] == "GausianNB":
 
+        model = GaussianNB(**algo_dico["hyperparameters"])
+        print("gausian")
+        model.fit(X_train, y_train)
+        return model
+    if algo_dico["algorithm_name"] == "SVC":
+        print("svc")
+        model = SVC(**algo_dico["hyperparameters"])
+        model.fit(X_train, y_train)
+        return model
+    else:
+        raise "not a good algo"
 
 """
 Given one example (representation of an image as used to compute the model),
@@ -180,17 +194,28 @@ are worst than random
 
 
 def estimate_model_score(train_data, model, k):
+    score = 0
+    for i in range(k):
+        X_train, X_test, y_train, y_test = train_test_split(train_data[1], train_data[0], test_size=0.20)
+        model.fit(X_train, y_train)
+
+        y_predict = model.predict(X_test)
+
+        score += accuracy_score(y_test, y_predict)
+    return score / k
+
     return
 
 
 if __name__ == '__main__':
-    filename = ["za7huw.jpeg", "zedaza.jpeg"]
-    data_Test = load_transform_test_data("test", "a")
-    train_data = load_transform_label_train_data("Data", "a")
+    filename = glob.glob("test/*")
 
-    algo_dico = {
-        'algorithm': 'SVC',
-        'hyper_parameters': {
+    data_Test = load_transform_test_data("test", "GRAY")
+    train_data = load_transform_label_train_data("Data", "GRAY")
+
+    algo_dico_SVC = {
+        'algorithm_name': 'SVC',
+        'hyperparameters': {
             'C': 1.0,
             'kernel': 'rbf',
             'degree': 3,
@@ -207,6 +232,17 @@ if __name__ == '__main__':
         }
     }
 
-    model = learn_model_from_data(train_data, algo_dico)
+    algo_dico_Gausian = {
+        'algorithm_name': 'GausianNB',
+        'hyperparameters': {
+        }
+    }
 
-    write_predictions("./", filename, data_Test, model)
+
+
+    ##model = learn_model_from_data(train_data, algo_dico_SVC)
+
+    ##write_predictions("./", filename, data_Test, model)
+
+    model = GaussianNB(**algo_dico_Gausian["hyperparameters"])
+    print(estimate_model_score(train_data, model, 3))
