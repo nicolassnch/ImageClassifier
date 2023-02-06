@@ -3,18 +3,14 @@ Created on Fri Jan 20 19:07:43 2023
 
 @author: cecile capponi
 """
-from collections import Counter
 import glob
-
 import numpy as np
 import cv2
+
 from sklearn.metrics import accuracy_score
 from sklearn.model_selection import train_test_split
 from sklearn.naive_bayes import GaussianNB
 from sklearn.svm import SVC
-
-SIZE_WIGHT = 500
-SIZE_LENGTH = 500
 
 """
 Computes a representation of an image from the (gif, png, jpg...) file 
@@ -29,18 +25,17 @@ output = a new representation of the image
 
 
 def raw_image_to_representation(image, representation):
-    if representation == "GRAY":
+
+    if representation =="GRAY":
+
         img = cv2.imread(image)
 
-        desired_size = (SIZE_WIGHT, SIZE_LENGTH)
+        desired_size = (500, 500)
 
         resized_image = cv2.resize(img, desired_size)
 
         gray = cv2.cvtColor(resized_image, cv2.COLOR_BGR2GRAY)
         return np.ravel(gray).tolist()
-
-    raise representation + " existe pas "
-
 
 """
 Returns a data structure embedding train images described according to the 
@@ -114,9 +109,10 @@ def learn_model_from_data(train_data, algo_dico):
     X_train = train_data[1]
     y_train = train_data[0]
 
-    if algo_dico["algorithm_name"] == "GausianNB":
+    if algo_dico["algorithm_name"] == "GaussianNB":
+
         model = GaussianNB(**algo_dico["hyperparameters"])
-        print("gausian")
+        print("gaussian")
         model.fit(X_train, y_train)
         return model
     if algo_dico["algorithm_name"] == "SVC":
@@ -126,7 +122,6 @@ def learn_model_from_data(train_data, algo_dico):
         return model
     else:
         raise "not a good algo"
-
 
 """
 Given one example (representation of an image as used to compute the model),
@@ -206,8 +201,6 @@ def estimate_model_score(train_data, model, k):
         score += accuracy_score(y_test, y_predict)
     return score / k
 
-    return
-
 
 if __name__ == '__main__':
     filename = glob.glob("test/*")
@@ -234,15 +227,14 @@ if __name__ == '__main__':
         }
     }
 
-    algo_dico_Gausian = {
-        'algorithm_name': 'GausianNB',
+    algo_dico_Gaussian = {
+        'algorithm_name': 'GaussianNB',
         'hyperparameters': {
-            "var_smoothing": 1e-9
         }
     }
 
-    ##model = learn_model_from_data(train_data,S      ##partie pour ecrire dans le predicte.txt
+    ##model = learn_model_from_data(train_data, algo_dico_SVC)
     ##write_predictions("./", filename, data_Test, model)
 
-    model = GaussianNB(**algo_dico_Gausian["hyperparameters"])  ##partie pour avoir le score
+    model = GaussianNB(**algo_dico_Gaussian["hyperparameters"])
     print(estimate_model_score(train_data, model, 3))
