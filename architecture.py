@@ -13,6 +13,9 @@ from sklearn.model_selection import train_test_split
 from sklearn.naive_bayes import GaussianNB
 from sklearn.svm import SVC
 
+SIZE_WIGHT = 500
+SIZE_LENGTH = 500
+
 """
 Computes a representation of an image from the (gif, png, jpg...) file 
 representation can be (to extend) 
@@ -26,19 +29,18 @@ output = a new representation of the image
 
 
 def raw_image_to_representation(image, representation):
-
-    if representation =="GRAY":
-
+    if representation == "GRAY":
         img = cv2.imread(image)
 
-        desired_size = (500, 500)
+        desired_size = (SIZE_WIGHT, SIZE_LENGTH)
 
         resized_image = cv2.resize(img, desired_size)
 
         gray = cv2.cvtColor(resized_image, cv2.COLOR_BGR2GRAY)
         return np.ravel(gray).tolist()
 
-        raise representation + " existe pas "
+    raise representation + " existe pas "
+
 
 """
 Returns a data structure embedding train images described according to the 
@@ -113,7 +115,6 @@ def learn_model_from_data(train_data, algo_dico):
     y_train = train_data[0]
 
     if algo_dico["algorithm_name"] == "GausianNB":
-
         model = GaussianNB(**algo_dico["hyperparameters"])
         print("gausian")
         model.fit(X_train, y_train)
@@ -125,6 +126,7 @@ def learn_model_from_data(train_data, algo_dico):
         return model
     else:
         raise "not a good algo"
+
 
 """
 Given one example (representation of an image as used to compute the model),
@@ -235,14 +237,12 @@ if __name__ == '__main__':
     algo_dico_Gausian = {
         'algorithm_name': 'GausianNB',
         'hyperparameters': {
+            "var_smoothing": 1e-9
         }
     }
 
-
-
-    ##model = learn_model_from_data(train_data, algo_dico_SVC)
-
+    ##model = learn_model_from_data(train_data,S      ##partie pour ecrire dans le predicte.txt
     ##write_predictions("./", filename, data_Test, model)
 
-    model = GaussianNB(**algo_dico_Gausian["hyperparameters"])
+    model = GaussianNB(**algo_dico_Gausian["hyperparameters"])  ##partie pour avoir le score
     print(estimate_model_score(train_data, model, 3))
