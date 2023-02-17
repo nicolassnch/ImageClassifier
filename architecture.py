@@ -23,19 +23,13 @@ input = an image (jpg, png, gif)
 output = a new representation of the image
 """
 
-
 def raw_image_to_representation(image, representation):
-
     if representation =="GRAY":
-
         img = cv2.imread(image)
-
         desired_size = (500, 500)
-
         resized_image = cv2.resize(img, desired_size)
-
         gray = cv2.cvtColor(resized_image, cv2.COLOR_BGR2GRAY)
-        return np.ravel(gray).tolist()
+        
 
 """
 Returns a data structure embedding train images described according to the 
@@ -160,7 +154,7 @@ def predict_sample_label(data, model):
 
 """
 Save the predictions on data to a text file with syntax:
-filename <space> label (either -1 or 1)  
+filename <space> label (either -1 or 1
 NO ACCENT  
 Here data has been previously transformed to the representation used to learn
 the model
@@ -168,7 +162,6 @@ input = where to save the predictions, structure embedding the data, the model u
 for predictions
 output =  OK if the file has been saved, not OK if not
 """
-
 
 def write_predictions(directory, filename, data, model):
     predictions_label = predict_sample_label(data, model)
@@ -187,8 +180,7 @@ input = the train labelled data as previously structured, the learned model, and
 the number of split to be used either in a hold-out or by cross-validation  
 output =  The score of success (betwwen 0 and 1, the higher the better, scores under 0.5
 are worst than random
-"""
-
+""
 
 def estimate_model_score(train_data, model, k):
     score = 0
@@ -200,7 +192,6 @@ def estimate_model_score(train_data, model, k):
 
         score += accuracy_score(y_test, y_predict)
     return score / k
-
 
 if __name__ == '__main__':
     filename = glob.glob("test/*")
@@ -226,7 +217,6 @@ if __name__ == '__main__':
             'random_state': None
         }
     }
-
     algo_dico_Gaussian = {
         'algorithm_name': 'GaussianNB',
         'hyperparameters': {
