@@ -29,7 +29,7 @@ def raw_image_to_representation(image, representation):
         desired_size = (500, 500)
         resized_image = cv2.resize(img, desired_size)
         gray = cv2.cvtColor(resized_image, cv2.COLOR_BGR2GRAY)
-        
+        return np.ravel(gray).tolist()
 
 """
 Returns a data structure embedding train images described according to the 
