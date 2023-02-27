@@ -3,18 +3,14 @@ Created on Fri Jan 20 19:07:43 2023
 
 @author: cecile capponi
 """
-from collections import Counter
 import glob
-
 import numpy as np
 import cv2
+
 from sklearn.metrics import accuracy_score
 from sklearn.model_selection import train_test_split
 from sklearn.naive_bayes import GaussianNB
 from sklearn.svm import SVC
-
-SIZE_WIGHT = 500
-SIZE_LENGTH = 500
 
 """
 Computes a representation of an image from the (gif, png, jpg...) file 
@@ -29,22 +25,24 @@ output = a new representation of the image
 
 
 def raw_image_to_representation(image, representation):
-
     img = cv2.imread(image)
-    desired_size = (SIZE_WIGHT, SIZE_LENGTH)
+
+    desired_size = (500, 500)
+
     resized_image = cv2.resize(img, desired_size)
 
-    if representation == "GRAY":
+    if representation == "HC":
+
+        hist, bins = np.histogram(resized_image.ravel(), 256, [0, 256])
+
+        histogram_to_list = hist.tolist()
+
+        return histogram_to_list
+
+    elif representation == "GC":
 
         gray = cv2.cvtColor(resized_image, cv2.COLOR_BGR2GRAY)
         return np.ravel(gray).tolist()
-
-    if representation == "RGB":
-
-        img_array = np.array(resized_image)
-        print(img_array)
-        return np.ravel(img_array)
-
 
 
 """
@@ -119,11 +117,12 @@ def learn_model_from_data(train_data, algo_dico):
     X_train = train_data[1]
     y_train = train_data[0]
 
-    if algo_dico["algorithm_name"] == "GausianNB":
+    if algo_dico["algorithm_name"] == "GaussianNB":
         model = GaussianNB(**algo_dico["hyperparameters"])
-        print("gausian")
+        print("gaussian")
         model.fit(X_train, y_train)
         return model
+
     if algo_dico["algorithm_name"] == "SVC":
         print("svc")
         model = SVC(**algo_dico["hyperparameters"])
@@ -203,6 +202,9 @@ are worst than random
 def estimate_model_score(train_data, model, k):
     score = 0
     for i in range(k):
+        # Pour estimer il faut : train_test_split au moins 5 fois et faire la moyenne
+        #                       cross_val_score
+        # Garder les meilleurs hyperparametres (utiliser grid_search)
         X_train, X_test, y_train, y_test = train_test_split(train_data[1], train_data[0], test_size=0.20)
         model.fit(X_train, y_train)
 
@@ -215,8 +217,8 @@ def estimate_model_score(train_data, model, k):
 if __name__ == '__main__':
     filename = glob.glob("test/*")
 
-    data_Test = load_transform_test_data("test", "RGB")
-    train_data = load_transform_label_train_data("Data", "RGB")
+    data_Test = load_transform_test_data("test", "HC")
+    train_data = load_transform_label_train_data("Data", "HC")
 
     algo_dico_SVC = {
         'algorithm_name': 'SVC',
@@ -237,15 +239,14 @@ if __name__ == '__main__':
         }
     }
 
-    algo_dico_Gausian = {
-        'algorithm_name': 'GausianNB',
+    algo_dico_Gaussian = {
+        'algorithm_name': 'GaussianNB',
         'hyperparameters': {
-            "var_smoothing": 1e-9
         }
     }
 
-    ##model = learn_model_from_data(train_data,S      ##partie pour ecrire dans le predicte.txt
+    ##model = learn_model_from_data(train_data, algo_dico_SVC)
     ##write_predictions("./", filename, data_Test, model)
 
-    model = SVC(**algo_dico_SVC["hyperparameters"])  ##partie pour avoir le score
-    print(estimate_model_score(train_data, model, 1))
+    model = GaussianNB(**algo_dico_Gaussian["hyperparameters"])
+    print(estimate_model_score(train_data, model, 8))
