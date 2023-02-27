@@ -25,10 +25,18 @@ output = a new representation of the image
 
 
 def raw_image_to_representation(image, representation):
-
     if representation == "HC":
+        img = cv2.imread(image)
 
-        
+        desired_size = (500, 500)
+
+        resized_image = cv2.resize(img, desired_size)
+
+        hist, bins = np.histogram(resized_image.ravel(), 256, [0, 256])
+
+        histogram_to_list = hist.tolist()
+
+        return histogram_to_list
 
     elif representation == "GC":
         img = cv2.imread(image)
