@@ -29,17 +29,22 @@ output = a new representation of the image
 
 
 def raw_image_to_representation(image, representation):
+
+    img = cv2.imread(image)
+    desired_size = (SIZE_WIGHT, SIZE_LENGTH)
+    resized_image = cv2.resize(img, desired_size)
+
     if representation == "GRAY":
-        img = cv2.imread(image)
-
-        desired_size = (SIZE_WIGHT, SIZE_LENGTH)
-
-        resized_image = cv2.resize(img, desired_size)
 
         gray = cv2.cvtColor(resized_image, cv2.COLOR_BGR2GRAY)
         return np.ravel(gray).tolist()
 
-    raise representation + " existe pas "
+    if representation == "RGB":
+
+        img_array = np.array(resized_image)
+        print(img_array)
+        return np.ravel(img_array)
+
 
 
 """
@@ -206,14 +211,12 @@ def estimate_model_score(train_data, model, k):
         score += accuracy_score(y_test, y_predict)
     return score / k
 
-    return
-
 
 if __name__ == '__main__':
     filename = glob.glob("test/*")
 
-    data_Test = load_transform_test_data("test", "GRAY")
-    train_data = load_transform_label_train_data("Data", "GRAY")
+    data_Test = load_transform_test_data("test", "RGB")
+    train_data = load_transform_label_train_data("Data", "RGB")
 
     algo_dico_SVC = {
         'algorithm_name': 'SVC',
@@ -244,5 +247,5 @@ if __name__ == '__main__':
     ##model = learn_model_from_data(train_data,S      ##partie pour ecrire dans le predicte.txt
     ##write_predictions("./", filename, data_Test, model)
 
-    model = GaussianNB(**algo_dico_Gausian["hyperparameters"])  ##partie pour avoir le score
-    print(estimate_model_score(train_data, model, 3))
+    model = SVC(**algo_dico_SVC["hyperparameters"])  ##partie pour avoir le score
+    print(estimate_model_score(train_data, model, 1))
