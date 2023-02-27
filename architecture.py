@@ -39,6 +39,10 @@ def raw_image_to_representation(image, representation):
 
         return histogram_to_list
 
+    elif representation == "PX":
+        img_array = np.array(resized_image)
+        return np.ravel(img_array).tolist()
+
     elif representation == "GC":
 
         gray = cv2.cvtColor(resized_image, cv2.COLOR_BGR2GRAY)
