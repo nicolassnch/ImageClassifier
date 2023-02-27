@@ -26,8 +26,11 @@ output = a new representation of the image
 
 def raw_image_to_representation(image, representation):
 
-    if representation =="GRAY":
+    if representation == "HC":
 
+        
+
+    elif representation == "GC":
         img = cv2.imread(image)
 
         desired_size = (500, 500)
@@ -36,6 +39,7 @@ def raw_image_to_representation(image, representation):
 
         gray = cv2.cvtColor(resized_image, cv2.COLOR_BGR2GRAY)
         return np.ravel(gray).tolist()
+
 
 """
 Returns a data structure embedding train images described according to the 
@@ -110,11 +114,11 @@ def learn_model_from_data(train_data, algo_dico):
     y_train = train_data[0]
 
     if algo_dico["algorithm_name"] == "GaussianNB":
-
         model = GaussianNB(**algo_dico["hyperparameters"])
         print("gaussian")
         model.fit(X_train, y_train)
         return model
+
     if algo_dico["algorithm_name"] == "SVC":
         print("svc")
         model = SVC(**algo_dico["hyperparameters"])
@@ -122,6 +126,7 @@ def learn_model_from_data(train_data, algo_dico):
         return model
     else:
         raise "not a good algo"
+
 
 """
 Given one example (representation of an image as used to compute the model),
@@ -193,6 +198,9 @@ are worst than random
 def estimate_model_score(train_data, model, k):
     score = 0
     for i in range(k):
+        # Pour estimer il faut : train_test_split au moins 5 fois et faire la moyenne
+        #                       cross_val_score
+        # Garder les meilleurs hyperparametres (utiliser grid_search)
         X_train, X_test, y_train, y_test = train_test_split(train_data[1], train_data[0], test_size=0.20)
         model.fit(X_train, y_train)
 
