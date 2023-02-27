@@ -25,12 +25,13 @@ output = a new representation of the image
 
 
 def raw_image_to_representation(image, representation):
+    img = cv2.imread(image)
+
+    desired_size = (500, 500)
+
+    resized_image = cv2.resize(img, desired_size)
+
     if representation == "HC":
-        img = cv2.imread(image)
-
-        desired_size = (500, 500)
-
-        resized_image = cv2.resize(img, desired_size)
 
         hist, bins = np.histogram(resized_image.ravel(), 256, [0, 256])
 
@@ -39,11 +40,6 @@ def raw_image_to_representation(image, representation):
         return histogram_to_list
 
     elif representation == "GC":
-        img = cv2.imread(image)
-
-        desired_size = (500, 500)
-
-        resized_image = cv2.resize(img, desired_size)
 
         gray = cv2.cvtColor(resized_image, cv2.COLOR_BGR2GRAY)
         return np.ravel(gray).tolist()
@@ -221,8 +217,8 @@ def estimate_model_score(train_data, model, k):
 if __name__ == '__main__':
     filename = glob.glob("test/*")
 
-    data_Test = load_transform_test_data("test", "GRAY")
-    train_data = load_transform_label_train_data("Data", "GRAY")
+    data_Test = load_transform_test_data("test", "HC")
+    train_data = load_transform_label_train_data("Data", "HC")
 
     algo_dico_SVC = {
         'algorithm_name': 'SVC',
@@ -253,4 +249,4 @@ if __name__ == '__main__':
     ##write_predictions("./", filename, data_Test, model)
 
     model = GaussianNB(**algo_dico_Gaussian["hyperparameters"])
-    print(estimate_model_score(train_data, model, 3))
+    print(estimate_model_score(train_data, model, 8))
