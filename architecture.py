@@ -8,7 +8,7 @@ import numpy as np
 import cv2
 
 from sklearn.metrics import accuracy_score
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import train_test_split, GridSearchCV, KFold
 from sklearn.naive_bayes import GaussianNB
 from sklearn.svm import SVC
 
@@ -118,8 +118,21 @@ output =  a model fit with data
 
 
 def learn_model_from_data(train_data, algo_dico):
+    kfold = KFold(n_splits=5)
+
     X_train = train_data[1]
     y_train = train_data[0]
+
+    hyperparameters = {
+        'C': [0.1, 1, 10],
+        'kernel': ['linear', 'rbf'],
+        'gamma': ['scale', 0.1, 1],
+        'shrinking': [True, False],
+        'probability': [True, False],
+        'tol': [0.001, 0.01],
+        'verbose': [False],
+        'random_state': [None]
+    }
 
     if algo_dico["algorithm_name"] == "GaussianNB":
         model = GaussianNB(**algo_dico["hyperparameters"])
@@ -128,12 +141,14 @@ def learn_model_from_data(train_data, algo_dico):
         return model
 
     if algo_dico["algorithm_name"] == "SVC":
-        print("svc")
-        model = SVC(**algo_dico["hyperparameters"])
-        model.fit(X_train, y_train)
+        svc = SVC()
+
+        grid_search = GridSearchCV(svc, hyperparameters, cv=kfold)
+        grid_search.fit(X_train, y_train)
+        model = SVC(**grid_search.best_params_)
+        model.fit(X_train,y_train)
         return model
-    else:
-        raise "not a good algo"
+
 
 
 """
@@ -219,7 +234,7 @@ def estimate_model_score(train_data, model, k):
 
 
 if __name__ == '__main__':
-    filename = glob.glob("test/*")
+    filename = glob.glob("t.jpg")
 
     data_Test = load_transform_test_data("test", "HC")
     train_data = load_transform_label_train_data("Data", "HC")
@@ -227,16 +242,16 @@ if __name__ == '__main__':
     algo_dico_SVC = {
         'algorithm_name': 'SVC',
         'hyperparameters': {
-            'C': 1.0,
-            'kernel': 'rbf',
+            'C':  [0.1, 1, 10, 100],
+            'kernel':  ['linear', 'rbf'],
             'degree': 3,
-            'gamma': 'scale',
+            'gamma':  [0.01, 0.1, 1, 'scale'],
             'coef0': 0.0,
-            'shrinking': True,
-            'probability': False,
-            'tol': 0.001,
+            'shrinking': [True, False],
+            'probability': [True, False],
+            'tol': [0.001, 0.01],
             'class_weight': None,
-            'verbose': False,
+            'verbose': [True, False],
             'max_iter': -1,
             'decision_function_shape': 'ovr',
             'random_state': None
@@ -249,8 +264,8 @@ if __name__ == '__main__':
         }
     }
 
-    ##model = learn_model_from_data(train_data, algo_dico_SVC)
-    ##write_predictions("./", filename, data_Test, model)
+    model = learn_model_from_data(train_data, algo_dico_SVC)
+    write_predictions("./", filename, data_Test, model)
 
-    model = GaussianNB(**algo_dico_Gaussian["hyperparameters"])
-    print(estimate_model_score(train_data, model, 8))
+    ##model = GaussianNB(**algo_dico_Gaussian["hyperparameters"])
+    ##print(estimate_model_score(train_data, model, 8))
