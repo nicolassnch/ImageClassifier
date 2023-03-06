@@ -1,27 +1,11 @@
-"""
-Created on Fri Jan 20 19:07:43 2023
-
-@author: cecile capponi
-"""
 import glob
 import numpy as np
 import cv2
 
-from sklearn.metrics import accuracy_score
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import GridSearchCV, cross_val_score
 from sklearn.naive_bayes import GaussianNB
 from sklearn.svm import SVC
-
-"""
-Computes a representation of an image from the (gif, png, jpg...) file 
-representation can be (to extend) 
-'HC': color histogram
-'PX': tensor of pixels
-'GC': matrix of gray pixels 
-other to be defined
-input = an image (jpg, png, gif)
-output = a new representation of the image
-"""
+from sklearn.neural_network import MLPClassifier
 
 
 def raw_image_to_representation(image, representation):
@@ -40,126 +24,91 @@ def raw_image_to_representation(image, representation):
         return histogram_to_list
 
     elif representation == "PX":
+
         img_array = np.array(resized_image)
+
         return np.ravel(img_array).tolist()
 
     elif representation == "GC":
 
         gray = cv2.cvtColor(resized_image, cv2.COLOR_BGR2GRAY)
+
         return np.ravel(gray).tolist()
 
-
-"""
-Returns a data structure embedding train images described according to the 
-specified representation and associate each image to its label.
--> Representation can be (to extend) 
-'HC': color histogram
-'PX': tensor of pixels 
-'GC': matrix of gray pixels
-other to be defined
-input = where are the data, which represenation of the data must be produced ? 
-output = a structure (dictionnary ? Matrix ? File ?) where the images of the
-directory have been transformed and labelled according to the directory they are
-stored in.
--- uses function raw_image_to_representation
-"""
+    else:
+        raise Exception(f"{representation} n'est pas une représentation correcte")
 
 
 def load_transform_label_train_data(directory, representation):
     label = []
     data = []
 
-    arrMer = glob.glob(directory + "/Mer/*")
-    arrAilleur = glob.glob(directory + "/Ailleurs/*")
+    mer_images = glob.glob(directory + "/Mer/*")
+    ailleurs_images = glob.glob(directory + "/Ailleurs/*")
 
-    for path in arrMer:
+    for path in mer_images:
         label.append(1)
         data.append(raw_image_to_representation(path, representation))
-    for path in arrAilleur:
+
+    for path in ailleurs_images:
         label.append(-1)
         data.append(raw_image_to_representation(path, representation))
 
     return label, data
 
 
-"""
-Returns a data structure embedding test images described according to the 
-specified representation.
--> Representation can be (to extend) 
-'HC': color histogram
-'PX': tensor of pixels 
-'GC': matrix of gray pixels 
-other to be defined
-input = where are the data, which represenation of the data must be produced ? 
-output = a structure (dictionnary ? Matrix ? File ?) where the images of the
-directory have been transformed (but not labelled)
--- uses function raw_image_to_representation
-"""
-
-
 def load_transform_test_data(directory, representation):
-    testData = []
-    arrTest = glob.glob(directory + "/*")
+    test_data = []
+    test_images = glob.glob(directory + "/*")
 
-    for path in arrTest:
-        testData.append(raw_image_to_representation(path, representation))
+    for path in test_images:
+        test_data.append(raw_image_to_representation(path, representation))
 
-    return testData
-
-
-"""
-Learn a model (function) from a representation of data, using the algorithm 
-and its hyper-parameters described in algo_dico
-Here data has been previously transformed to the representation used to learn
-the model
-input = transformed labelled data, the used learning algo and its hyper-parameters (a dico ?)
-output =  a model fit with data
-"""
+    return test_data
 
 
 def learn_model_from_data(train_data, algo_dico):
     X_train = train_data[1]
-    y_train = train_data[0]
+    Y_train = train_data[0]
 
     if algo_dico["algorithm_name"] == "GaussianNB":
-        model = GaussianNB(**algo_dico["hyperparameters"])
-        print("gaussian")
-        model.fit(X_train, y_train)
+        gaussian = GaussianNB()
+
+        grid_search = GridSearchCV(gaussian, algo_dico['hyperparameters'], cv=5)
+        grid_search.fit(X_train, Y_train)
+
+        model = GaussianNB(**grid_search.best_params_)
+
+        model.fit(X_train, Y_train)
         return model
 
-    if algo_dico["algorithm_name"] == "SVC":
-        print("svc")
-        model = SVC(**algo_dico["hyperparameters"])
-        model.fit(X_train, y_train)
+    elif algo_dico["algorithm_name"] == "SVC":
+        svc = SVC()
+
+        grid_search = GridSearchCV(svc, algo_dico['hyperparameters'], cv=5)
+        grid_search.fit(X_train, Y_train)
+
+        model = SVC(**grid_search.best_params_)
+        model.fit(X_train, Y_train)
         return model
+
+    elif algo_dico["algorithm_name"] == "MLP":
+        mlp = MLPClassifier()
+
+        grid_search = GridSearchCV(mlp, algo_dico['hyperparameters'], cv=5)
+        grid_search.fit(X_train, Y_train)
+
+        model = MLPClassifier(**grid_search.best_params_)
+        model.fit(X_train, Y_train)
+        return model
+
     else:
-        raise "not a good algo"
-
-
-"""
-Given one example (representation of an image as used to compute the model),
-computes its class according to a previously learned model.
-Here data has been previously transformed to the representation used to learn
-the model
-input = representation of one data, the learned model
-output = the label of that one data (+1 or -1)
--- uses the model learned by function learn_model_from_data
-"""
+        raise Exception(f"{algo_dico} n'est pas un algorithme utilisable")
 
 
 def predict_example_label(example, model):
     label = model.predict([example])
     return label[0]
-
-
-"""
-Computes an array (or list or dico or whatever) that associates a prediction 
-to each example (image) of the data, using a previously learned model. 
-Here data has been previously transformed to the representation used to learn
-the model
-input = a structure (dico, matrix, ...) embedding all transformed data to a representation, and a model
-output =  a structure that associates a label to each data (image) of the input sample
-"""
 
 
 def predict_sample_label(data, model):
@@ -168,19 +117,8 @@ def predict_sample_label(data, model):
     for image in data:
         prediction = predict_example_label(image, model)
         predictions_label.append(prediction)
+
     return predictions_label
-
-
-"""
-Save the predictions on data to a text file with syntax:
-filename <space> label (either -1 or 1)  
-NO ACCENT  
-Here data has been previously transformed to the representation used to learn
-the model
-input = where to save the predictions, structure embedding the data, the model used
-for predictions
-output =  OK if the file has been saved, not OK if not
-"""
 
 
 def write_predictions(directory, filename, data, model):
@@ -191,66 +129,58 @@ def write_predictions(directory, filename, data, model):
             fichier.write(filename[i] + " " + str(predictions_label[i]) + "\n")
 
 
-"""
-Estimates the accuracy of a previously learned model using train data, 
-either through CV or mean hold-out, with k folds.
-Here data has been previously transformed to the representation used to learn
-the model
-input = the train labelled data as previously structured, the learned model, and
-the number of split to be used either in a hold-out or by cross-validation  
-output =  The score of success (betwwen 0 and 1, the higher the better, scores under 0.5
-are worst than random
-"""
-
-
 def estimate_model_score(train_data, model, k):
-    score = 0
-    for i in range(k):
-        # Pour estimer il faut : train_test_split au moins 5 fois et faire la moyenne
-        #                       cross_val_score
-        # Garder les meilleurs hyperparametres (utiliser grid_search)
-        X_train, X_test, y_train, y_test = train_test_split(train_data[1], train_data[0], test_size=0.20)
-        model.fit(X_train, y_train)
+    X_train, y_train = train_data[1], train_data[0]
 
-        y_predict = model.predict(X_test)
+    scores = cross_val_score(model, X_train, y_train, cv=k)
+    avg_score = scores.mean()
 
-        score += accuracy_score(y_test, y_predict)
-    return score / k
+    return avg_score
 
 
 if __name__ == '__main__':
     filename = glob.glob("test/*")
 
-    data_Test = load_transform_test_data("test", "HC")
-    train_data = load_transform_label_train_data("Data", "HC")
+    print("//////////////// LOAD TEST DATA ////////////////")
+    data_Test = load_transform_test_data("test", "PX")
+
+    print("//////////////// LOAD TRAIN DATA ////////////////")
+    train_data = load_transform_label_train_data("Data", "PX")
 
     algo_dico_SVC = {
         'algorithm_name': 'SVC',
         'hyperparameters': {
-            'C': 1.0,
-            'kernel': 'rbf',
-            'degree': 3,
-            'gamma': 'scale',
-            'coef0': 0.0,
-            'shrinking': True,
-            'probability': False,
-            'tol': 0.001,
-            'class_weight': None,
-            'verbose': False,
-            'max_iter': -1,
-            'decision_function_shape': 'ovr',
-            'random_state': None
+            'C': [0.1, 1, 10, 100],
+            'kernel': ['linear', 'rbf', 'sigmoid'],
+            'gamma': ['scale', 0.1, 1],
+            'verbose': [False]
         }
     }
 
     algo_dico_Gaussian = {
         'algorithm_name': 'GaussianNB',
         'hyperparameters': {
+            'var_smoothing': [1e-9, 1e-7, 1e-5]
         }
     }
 
-    ##model = learn_model_from_data(train_data, algo_dico_SVC)
+    algo_dico_MLP = {
+        'algorithm_name': 'MLP',
+        'hyperparameters': {
+            'hidden_layer_sizes': [(10,), (20,), (30,)],
+            'activation': ['identity', 'logistic', 'tanh', 'relu'],
+            'solver': ['sgd', 'adam'],
+            'alpha': [0.0001, 0.001, 0.01, 0.1],
+            'learning_rate': ['constant', 'invscaling', 'adaptive'],
+        }
+    }
+
+    print("//////////////// LOADING MODEL ////////////////")
+    model = learn_model_from_data(train_data, algo_dico_SVC)
     ##write_predictions("./", filename, data_Test, model)
 
-    model = GaussianNB(**algo_dico_Gaussian["hyperparameters"])
+    print("//////////////// ESTIMATING ////////////////")
+    ##model = GaussianNB(**algo_dico_Gaussian["hyperparameters"])
     print(estimate_model_score(train_data, model, 8))
+
+#SAUVEGARDER LES MODELS AVEC PICKLE
