@@ -67,7 +67,7 @@ def load_transform_test_data(directory, representation):
     return test_data
 
 
-def learn_model_from_data(train_data, algo_dico):
+def search_best_params(train_data, algo_dico):
     X_train = train_data[1]
     Y_train = train_data[0]
 
@@ -77,10 +77,7 @@ def learn_model_from_data(train_data, algo_dico):
         grid_search = GridSearchCV(gaussian, algo_dico['hyperparameters'], cv=5)
         grid_search.fit(X_train, Y_train)
 
-        model = GaussianNB(**grid_search.best_params_)
-
-        model.fit(X_train, Y_train)
-        return model
+        return grid_search
 
     elif algo_dico["algorithm_name"] == "SVC":
         svc = SVC()
@@ -88,9 +85,7 @@ def learn_model_from_data(train_data, algo_dico):
         grid_search = GridSearchCV(svc, algo_dico['hyperparameters'], cv=5)
         grid_search.fit(X_train, Y_train)
 
-        model = SVC(**grid_search.best_params_)
-        model.fit(X_train, Y_train)
-        return model
+        return grid_search
 
     elif algo_dico["algorithm_name"] == "MLP":
         mlp = MLPClassifier()
@@ -98,12 +93,34 @@ def learn_model_from_data(train_data, algo_dico):
         grid_search = GridSearchCV(mlp, algo_dico['hyperparameters'], cv=5)
         grid_search.fit(X_train, Y_train)
 
-        model = MLPClassifier(**grid_search.best_params_)
+        return grid_search
+
+    else:
+        raise Exception(f"{algo_dico['algorithm_name']} n'est pas un algorithme utilisable")
+
+
+def fit_with_params(train_data, algo_dico):
+    X_train = train_data[1]
+    Y_train = train_data[0]
+
+    if algo_dico["algorithm_name"] == "GaussianNB":
+        model = GaussianNB(**algo_dico['hyperparameters'])
+
+        model.fit(X_train, Y_train)
+        return model
+
+    elif algo_dico["algorithm_name"] == "SVC":
+        model = SVC(**algo_dico['hyperparameters'])
+        model.fit(X_train, Y_train)
+        return model
+
+    elif algo_dico["algorithm_name"] == "MLP":
+        model = MLPClassifier(**algo_dico['hyperparameters'])
         model.fit(X_train, Y_train)
         return model
 
     else:
-        raise Exception(f"{algo_dico} n'est pas un algorithme utilisable")
+        raise Exception(f"{algo_dico['algorithm_name']} n'est pas un algorithme utilisable")
 
 
 def predict_example_label(example, model):
@@ -139,10 +156,10 @@ def estimate_model_score(train_data, model, k):
 
 
 if __name__ == '__main__':
-    filename = glob.glob("test/*")
+    filename = glob.glob("TestCC2/*")
 
     print("//////////////// LOAD TEST DATA ////////////////")
-    data_Test = load_transform_test_data("test", "PX")
+    data_Test = load_transform_test_data("TestCC2", "PX")
 
     print("//////////////// LOAD TRAIN DATA ////////////////")
     train_data = load_transform_label_train_data("Data", "PX")
@@ -175,12 +192,25 @@ if __name__ == '__main__':
         }
     }
 
-    print("//////////////// LOADING MODEL ////////////////")
-    model = learn_model_from_data(train_data, algo_dico_SVC)
-    ##write_predictions("./", filename, data_Test, model)
+    final_dico_SVC = {
+        'algorithm_name': 'SVC',
+        'hyperparameters': {
+            'C': 1,
+            'kernel': 'rbf',
+            'gamma': 'scale',
+            'verbose': False
+        }
+    }
 
-    print("//////////////// ESTIMATING ////////////////")
+    print("//////////////// LOAD MODEL ////////////////")
+    model = fit_with_params(train_data, final_dico_SVC)
+
+    ##model = search_best_params(train_data, algo_dico_SVC)
+    print("//////////////// WRITE PREDICTIONS ////////////////")
+    write_predictions("./", filename, data_Test, model)
+
+    ##print("//////////////// ESTIMATING ////////////////")
     ##model = GaussianNB(**algo_dico_Gaussian["hyperparameters"])
-    print(estimate_model_score(train_data, model, 8))
+    ##print(estimate_model_score(train_data, model, 8))
 
 #SAUVEGARDER LES MODELS AVEC PICKLE
