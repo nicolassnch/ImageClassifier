@@ -48,16 +48,19 @@ def fit_with_params(train_data, algo_dico):
         model = GaussianNB(**algo_dico['hyperparameters'])
 
         model.fit(X_train, Y_train)
+
         return model
 
     elif algo_dico["algorithm_name"] == "SVC":
         model = SVC(**algo_dico['hyperparameters'])
         model.fit(X_train, Y_train)
+
         return model
 
     elif algo_dico["algorithm_name"] == "MLP":
         model = MLPClassifier(**algo_dico['hyperparameters'])
         model.fit(X_train, Y_train)
+
         return model
 
     else:

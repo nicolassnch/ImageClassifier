@@ -1,4 +1,5 @@
 import glob
+import pickle
 
 from image_processing import load_transform_test_data, load_transform_label_train_data
 from predictions import write_predictions
@@ -12,15 +13,6 @@ data_Test = load_transform_test_data("test", "PX")
 print("//////////////// LOAD TRAIN DATA ////////////////")
 train_data = load_transform_label_train_data("Data", "PX")
 
-algo_dico_SVC = {
-    'algorithm_name': 'SVC',
-    'hyperparameters': {
-        'C': [0.1, 1, 10, 100],
-        'kernel': ['linear', 'rbf', 'sigmoid'],
-        'gamma': ['scale', 0.1, 1],
-        'verbose': [True]
-    }
-}
 
 algo_dico_Gaussian = {
     'algorithm_name': 'GaussianNB',
@@ -43,17 +35,9 @@ algo_dico_MLP = {
 print("//////////////// LOAD MODEL ////////////////")
 ##grid_search = search_best_params(train_data, algo_dico_SVC)
 
-final_dico_SVC = {
-    'algorithm_name': 'SVC',
-    'hyperparameters': {
-        'C': 1,
-        'kernel': 'rbf',
-        'gamma': 'scale',
-        'verbose': False
-    }
-}
+parameters = pickle.load(open("parameters.pkl", "rb"))
 
-model = fit_with_params(train_data, final_dico_SVC)
+model = fit_with_params(train_data, parameters)
 
 print("//////////////// WRITE PREDICTIONS ////////////////")
 write_predictions("./", filename, data_Test, model)
