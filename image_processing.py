@@ -53,7 +53,7 @@ def load_transform_label_train_data(directory, representation):
     return label, data
 
 
-#
+
 def load_transform_test_data(directory, representation):
     test_data = []
     test_images = glob.glob(directory + "/*")
