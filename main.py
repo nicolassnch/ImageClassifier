@@ -1,16 +1,17 @@
 import glob
 import pickle
 
+from estimate import estimate_model_score
 from image_processing import load_transform_test_data, load_transform_label_train_data
 from predictions import write_predictions
 from trainer import fit_with_params
 
-filename = glob.glob("test/*")
+filename = glob.glob("TestCC2/*")
 
-print("//////////////// LOAD TEST DATA ////////////////")
-data_Test = load_transform_test_data("test", "PX")
+print("//////////////// LOADING TEST DATA ////////////////")
+data_Test = load_transform_test_data("TestCC2", "PX")
 
-print("//////////////// LOAD TRAIN DATA ////////////////")
+print("//////////////// LOADING TRAIN DATA ////////////////")
 train_data = load_transform_label_train_data("Data", "PX")
 
 
@@ -32,16 +33,25 @@ algo_dico_MLP = {
     }
 }
 
-print("//////////////// LOAD MODEL ////////////////")
+parameters = {
+    'algorithm_name': 'SVC',
+    'hyperparameters': {
+        'C': 1,
+        'gamma': 'scale',
+        'kernel': 'rbf',
+        'verbose': False
+    }
+}
+
+print("//////////////// LOADING MODEL ////////////////")
 ##grid_search = search_best_params(train_data, algo_dico_SVC)
+##model = fit_with_params(train_data, parameters)
 
-parameters = pickle.load(open("parameters.pkl", "rb"))
-
-model = fit_with_params(train_data, parameters)
+print("//////////////// LOADING WITH PICKLE ////////////////")
+model = pickle.load(open("model.pickle", 'rb'))
 
 print("//////////////// WRITE PREDICTIONS ////////////////")
 write_predictions("./", filename, data_Test, model)
 
 ##print("//////////////// ESTIMATING ////////////////")
-##model = GaussianNB(**algo_dico_Gaussian["hyperparameters"])
-##print(estimate_model_score(train_data, model, 8))
+##print(estimate_model_score(train_data, model, 5))

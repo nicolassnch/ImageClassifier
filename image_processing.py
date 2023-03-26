@@ -2,11 +2,12 @@ import glob
 import cv2
 import numpy as np
 
+
 #Transforme une image donnée en une représentation indiquée dans le paramètre "representation"
 def raw_image_to_representation(image, representation):
     img = cv2.imread(image)
 
-    desired_size = (500, 500)
+    desired_size = (90, 134)
 
     resized_image = cv2.resize(img, desired_size)
 
