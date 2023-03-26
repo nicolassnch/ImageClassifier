@@ -20,6 +20,6 @@ def predict_sample_label(data, model):
 def write_predictions(directory, filename, data, model):
     predictions_label = predict_sample_label(data, model)
 
-    with open(directory + "/prediction.txt", "w") as fichier:
+    with open(directory + "/Mattéo n'était pas là.txt", "w") as fichier:
         for i in range(len(filename)):
             fichier.write(filename[i] + " " + str(predictions_label[i]) + "\n")
