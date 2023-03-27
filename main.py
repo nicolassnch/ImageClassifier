@@ -14,9 +14,20 @@ train_data = load_transform_label_train_data("Data", "PX")
 print("//////////////// LOADING TEST DATA ////////////////")
 data_Test = load_transform_test_data("AllTest", "PX")
 
+parameters = {
+    'algorithm_name': 'SVC',
+    'hyperparameters': {
+        'C': 10,
+        'kernel': 'rbf',
+        'gamma': 'scale',
+        'verbose': False
+    }
+}
+
 print("//////////////// LOADING MODEL ////////////////")
 ##grid_search = search_best_params(train_data, algo_dico_SVC)
 ##model = fit_with_params(train_data, parameters)
+##pickle.dump(model, open('model.pickle', 'wb'))
 
 print("//////////////// LOADING WITH PICKLE ////////////////")
 model = pickle.load(open("model.pickle", 'rb'))

@@ -3,11 +3,12 @@ import cv2
 import numpy as np
 
 
-#Transforme une image donnée en une représentation indiquée dans le paramètre "representation"
+
+# Transforme une image donnée en une représentation indiquée dans le paramètre "representation"
 def raw_image_to_representation(image, representation):
     img = cv2.imread(image)
 
-    desired_size = (500, 500)
+    desired_size = (643, 405)
 
     resized_image = cv2.resize(img, desired_size)
 
@@ -35,13 +36,13 @@ def raw_image_to_representation(image, representation):
         raise Exception(f"{representation} n'est pas une représentation correcte")
 
 
-#Renvoie une structure de données avec les images transformées étiquetées
+# Renvoie une structure de données avec les images transformées étiquetées
 def load_transform_label_train_data(directory, representation):
     label = []
     data = []
 
-    mer_images = glob.glob(directory + "/Mer/*")
-    ailleurs_images = glob.glob(directory + "/Ailleurs/*")
+    mer_images = glob.glob(directory + "/Mer/average_resize/*")
+    ailleurs_images = glob.glob(directory + "/Ailleurs/average_resize/*")
 
     for path in mer_images:
         label.append(1)
