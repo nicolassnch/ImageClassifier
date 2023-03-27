@@ -7,7 +7,7 @@ import numpy as np
 def raw_image_to_representation(image, representation):
     img = cv2.imread(image)
 
-    desired_size = (90, 134)
+    desired_size = (500, 500)
 
     resized_image = cv2.resize(img, desired_size)
 
