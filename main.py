@@ -6,13 +6,13 @@ from image_processing import load_transform_test_data, load_transform_label_trai
 from predictions import write_predictions
 from trainer import fit_with_params
 
-filename = glob.glob("AllTest/*")
+filename = glob.glob("Test/*")
 
 print("//////////////// LOADING TRAIN DATA ////////////////")
 train_data = load_transform_label_train_data("Data", "PX")
 
 print("//////////////// LOADING TEST DATA ////////////////")
-data_Test = load_transform_test_data("AllTest", "PX")
+data_Test = load_transform_test_data("Test", "PX")
 
 parameters = {
     'algorithm_name': 'SVC',
