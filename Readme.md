@@ -36,6 +36,25 @@ maritimes ?
 💻 IDE
 ![PyCharm](https://img.shields.io/badge/pycharm-143?style=for-thebadge&logo=pycharm&logoColor=black&color=black&labelColor=green)
 
+## Data Processing
+
+#### 3 représentations d'images utilisées :
+- Histogramme de couleur
+- Tenseur de pixel
+- Array des niveaux de gris
+
+## Modèles de Machine Learning
+#### 3 modèles utilisés :
+- SVC
+- MLP
+- GaussianNB
+
+## Techniques utilisées
+
+##### Recherche des hyper-paramètres d'un modèle : `sklearn.GridSearchCV`
+##### Évaluation du score d'un modèle : évaluation grâce la `validation croisée` : `sklearn.cross_val_score`
+
+
 ## Comment utiliser le programme
 
 1. Ajouter un répertoire "Test" avec les images que vous voulez tester dedans.
