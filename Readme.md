@@ -36,8 +36,6 @@ maritimes ?
 💻 IDE
 ![PyCharm](https://img.shields.io/badge/pycharm-143?style=for-thebadge&logo=pycharm&logoColor=black&color=black&labelColor=green)
 
-* []()
-
 ## Comment utiliser le programme
 
 1. Ajouter un répertoire "Test" avec les images que vous voulez tester dedans.
