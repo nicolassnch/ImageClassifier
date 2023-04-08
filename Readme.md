@@ -47,6 +47,6 @@ maritimes ?
 
 ## Contributeurs
 
-* [ShaanCoding](https://github.com/ycncy/)
+* [Yacine Talhaoui](https://github.com/ycncy/)
 * [Mattéo Lizero](https://github.com/AngryWalrusss)
 * [Nicolas Sanchez](https://github.com/nicolassnch)
